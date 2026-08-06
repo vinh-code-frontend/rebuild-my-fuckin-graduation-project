@@ -1,0 +1,14 @@
+[*.cs]
+
+# indent
+indent_style = space
+indent_size = 4
+
+# newline
+end_of_line = crlf
+
+# using
+dotnet_sort_system_directives_first = true
+
+# braces
+csharp_new_line_before_open_brace = all
