@@ -78,9 +78,9 @@ public static class ServiceExtensions
         return services;
     }
 
-    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration config)
+    public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
-        var allowedOrigins = config.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
         services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
