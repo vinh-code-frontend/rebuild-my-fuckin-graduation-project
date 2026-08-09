@@ -14,6 +14,7 @@ builder.Services.Configure<RouteOptions>(options =>
 builder.Services.AddOpenApi();
 
 builder.Services.InitCustomServices(builder.Configuration);
+builder.Services.AddAppHealthCheck();
 
 var app = builder.Build();
 
@@ -40,6 +41,7 @@ app.UseMiddleware<App.Api.Middlewares.ExceptionHandlingMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.UseAppHealthCheck();
 app.UseHttpsRedirection();
 
 app.Lifetime.ApplicationStarted.Register(() =>
