@@ -51,23 +51,23 @@
 
 **Goal:** Thiết lập project structure, DB schema, CI pipeline, coding conventions.
 
-| Story ID  | Story                                | Status | Notes               |
-| --------- | ------------------------------------ | ------ | ------------------- |
-| FOUND-001 | Database schema design               | ⬜     |                     |
-| FOUND-002 | EF Core setup + migrations           | ⬜     |                     |
-| FOUND-003 | Global exception handling middleware | ✅     | Already implemented |
-| FOUND-004 | Logging infrastructure (Serilog)     | ⬜     |                     |
-| FOUND-005 | Swagger / OpenAPI setup              | ⬜     |                     |
-| FOUND-006 | CORS configuration                   | ⬜     |                     |
-| FOUND-007 | Nuxt project bootstrap               | ⬜     |                     |
-| FOUND-008 | React Admin bootstrap                | ⬜     |                     |
-| FOUND-009 | Environment config                   | ⬜     |                     |
-| FOUND-010 | CI pipeline                          | ⬜     |                     |
-| OBS-001   | Structured logging (Serilog)         | ⬜     |                     |
-| OBS-003   | Health check endpoints               | ⬜     |                     |
-| PERF-005  | API pagination enforcement           | ⬜     |                     |
+| Story ID  | Story                                | Status | Notes                                                               |
+| --------- | ------------------------------------ | ------ | ------------------------------------------------------------------- |
+| FOUND-001 | Database schema design               | ✅     |                                                                     |
+| FOUND-002 | EF Core setup + migrations           | ✅     |                                                                     |
+| FOUND-003 | Global exception handling middleware | ✅     | Already implemented                                                 |
+| FOUND-004 | Logging infrastructure (Serilog)     | ⬜     |                                                                     |
+| FOUND-005 | Scalar / OpenAPI setup               | ✅     |                                                                     |
+| FOUND-006 | CORS configuration                   | ✅     |                                                                     |
+| FOUND-007 | Nuxt project bootstrap               | ✅     |                                                                     |
+| FOUND-008 | React Admin bootstrap                | ✅     |                                                                     |
+| FOUND-009 | Environment config                   | ✅     |                                                                     |
+| FOUND-010 | CI pipeline                          | ⏭️     | Skipped                                                             |
+| OBS-001   | Structured logging (Serilog)         | ⬜     |                                                                     |
+| OBS-003   | Health check endpoints               | ✅     |                                                                     |
+| PERF-005  | API pagination enforcement           | ⏭️     | Skipped. handle this while implementing user management in sprint 1 |
 
-**Sprint 0 Completion:** 1 / 13
+**Sprint 0 Completion:** 11 / 13
 
 ---
 
