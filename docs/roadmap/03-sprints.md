@@ -44,7 +44,7 @@
 
 ---
 
-## Sprint 1 — Authentication & RBAC
+## Sprint 1 — Authentication & RBAC (Role-Based Access Control)
 
 **Sprint Goal:** Khách hàng có thể đăng ký, đăng nhập, quản lý session. Admin có thể login và được phân quyền theo role.
 
