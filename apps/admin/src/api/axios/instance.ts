@@ -18,16 +18,15 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-export const api = <T>(
+export const api = async <T>(
   config: AxiosRequestConfig,
   options?: AxiosRequestConfig
 ): Promise<T> => {
-  return axiosInstance
-    .request<T>({
-      ...config,
-      ...options,
-    })
-    .then((response) => response.data);
+  const response = await axiosInstance.request<T>({
+    ...config,
+    ...options,
+  });
+  return response.data;
 };
 
 export type ErrorType<Error> = AxiosError<Error>;

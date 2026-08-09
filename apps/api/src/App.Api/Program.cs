@@ -2,10 +2,12 @@ using App.Api.Data.Seeders;
 using App.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using App.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+
 builder.Services.Configure<RouteOptions>(options =>
 {
     options.LowercaseUrls = true;
@@ -32,17 +34,28 @@ if (args.Contains("seed"))
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
     app.MapScalarApiReference(options =>
     {
         options.Theme = ScalarTheme.Default;
     });
 }
-app.UseMiddleware<App.Api.Middlewares.ExceptionHandlingMiddleware>();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
+
 app.UseAppHealthCheck();
-app.UseHttpsRedirection();
 
 app.Lifetime.ApplicationStarted.Register(() =>
 {
@@ -56,6 +69,4 @@ app.Lifetime.ApplicationStarted.Register(() =>
     }
 });
 
-
 app.Run();
-
