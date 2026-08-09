@@ -1,4 +1,4 @@
-using App.Domain.DTOs;
+using App.Application.DTOs;
 using App.Domain.Entities;
 
 namespace App.Application.Extensions;

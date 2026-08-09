@@ -1,4 +1,4 @@
-namespace App.Domain.DTOs;
+namespace App.Application.DTOs;
 
 public record LoginRequest
 (
