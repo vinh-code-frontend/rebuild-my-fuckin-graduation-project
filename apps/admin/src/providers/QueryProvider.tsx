@@ -1,35 +1,29 @@
-import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-});
+import { type ReactNode, useState } from "react";
 
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+interface QueryProviderProps {
+  children: ReactNode;
+}
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+export function QueryProvider({ children }: QueryProviderProps) {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+          mutations: {
+            retry: 0,
+          },
+        },
+      })
+  );
 
-  return config;
-});
-
-export const api = <T>(
-  config: AxiosRequestConfig,
-  options?: AxiosRequestConfig
-): Promise<T> => {
-  return axiosInstance
-    .request<T>({
-      ...config,
-      ...options,
-    })
-    .then((response) => response.data);
-};
-
-export type ErrorType<Error> = AxiosError<Error>;
-
-export type BodyType<BodyData> = BodyData;
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+}
