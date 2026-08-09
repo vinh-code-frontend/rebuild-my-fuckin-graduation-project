@@ -3,70 +3,95 @@ using App.Api.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using App.Api.Middlewares;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-
-builder.Services.Configure<RouteOptions>(options =>
+try
 {
-    options.LowercaseUrls = true;
-});
+    Log.Information("Starting application");
 
-builder.Services.AddOpenApi();
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.InitCustomServices(builder.Configuration);
-builder.Services.AddAppHealthCheck();
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
-var app = builder.Build();
+    builder.Services.AddControllers();
 
-if (args.Contains("seed"))
-{
-    using var scope = app.Services.CreateScope();
-
-    var services = scope.ServiceProvider;
-    await DatabaseSeeder.SeedAsync(services);
-
-    return;
-}
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-
-    app.MapScalarApiReference(options =>
+    builder.Services.Configure<RouteOptions>(options =>
     {
-        options.Theme = ScalarTheme.Default;
+        options.LowercaseUrls = true;
     });
-}
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+    builder.Services.AddOpenApi();
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+    builder.Services.InitCustomServices(builder.Configuration);
+    builder.Services.AddAppHealthCheck();
 
-app.UseCors("AllowFrontend");
+    var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.UseAppHealthCheck();
-
-app.Lifetime.ApplicationStarted.Register(() =>
-{
-    ILogger logger = app.Logger;
-
-    foreach (var url in app.Urls)
+    if (args.Contains("seed"))
     {
-        logger.LogInformation("Listening on: {Url}", url);
-        logger.LogInformation("OpenAPI: {Url}/openapi/v1.json", url);
-        logger.LogInformation("Scalar : {Url}/scalar/v1", url);
-    }
-});
+        using var scope = app.Services.CreateScope();
 
-app.Run();
+        var services = scope.ServiceProvider;
+        await DatabaseSeeder.SeedAsync(services);
+
+        return;
+    }
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+
+        app.MapScalarApiReference(options =>
+        {
+            options.Theme = ScalarTheme.Default;
+        });
+    }
+
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseHttpsRedirection();
+    }
+
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    app.UseSerilogRequestLogging();
+
+    app.UseCors("AllowFrontend");
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.UseAppHealthCheck();
+
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        Microsoft.Extensions.Logging.ILogger logger = app.Logger;
+
+        foreach (var url in app.Urls)
+        {
+            logger.LogInformation("Listening on: {Url}", url);
+            logger.LogInformation("OpenAPI: {Url}/openapi/v1.json", url);
+            logger.LogInformation("Scalar : {Url}/scalar/v1", url);
+        }
+    });
+
+    app.Run();
+}
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
