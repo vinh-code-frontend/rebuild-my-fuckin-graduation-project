@@ -4,7 +4,7 @@ public class AuthService(
     ITokenService tokenService,
     IPasswordHasher passwordHasher,
     IUserRepository userRepository,
-    IReFreshTokenRepository reFreshTokenRepository,
+    IRefreshTokenRepository reFreshTokenRepository,
     IUnitOfWork unitOfWork
     ) : IAuthService
 {

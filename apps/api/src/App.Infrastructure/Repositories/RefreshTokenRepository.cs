@@ -1,6 +1,6 @@
 ﻿namespace App.Infrastructure.Repositories;
 
-public class RefreshTokenRepository(AppDbContext db) : IReFreshTokenRepository
+public class RefreshTokenRepository(AppDbContext db) : IRefreshTokenRepository
 {
     public void AddRefreshToken(RefreshToken refreshToken)
     {
