@@ -30,7 +30,6 @@ try
     builder.Services.AddOpenApi();
 
     builder.Services.InitCustomServices(builder.Configuration);
-    builder.Services.AddAppHealthCheck();
 
     var app = builder.Build();
 
