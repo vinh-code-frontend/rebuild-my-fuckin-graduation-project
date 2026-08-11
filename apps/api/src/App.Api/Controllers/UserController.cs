@@ -22,7 +22,7 @@ public class UserController(IUserService userService) : ControllerBase
     }
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<CreateUserResponse> CreateUser(CreateUserRequestDto value)
+    public async Task<CreateUserResponse> CreateUser(CreateUserRequest value)
     {
         return await userService.CreateUserAsync(value);
     }

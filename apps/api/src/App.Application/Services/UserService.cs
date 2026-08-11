@@ -17,7 +17,7 @@ public class UserService(IPasswordHasher passwordHasher, IUserRepository userRep
         return (await userRepository.GetUserByIdAsync(userId))?.ToUserResponse();
     }
 
-    public async Task<CreateUserResponse> CreateUserAsync(CreateUserRequestDto payload)
+    public async Task<CreateUserResponse> CreateUserAsync(CreateUserRequest payload)
     {
         string username = payload.Username.Trim().ToLower();
         string email = payload.Email.Trim().ToLower();
