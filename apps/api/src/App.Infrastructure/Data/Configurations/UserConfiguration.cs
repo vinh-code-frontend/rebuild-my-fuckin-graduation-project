@@ -11,7 +11,7 @@ public class UserConfiguration : TimestampWithSoftDeleteEntityConfiguration<User
         builder.HasIndex(user => user.Username).IsUnique();
         builder.HasIndex(user => user.Email).IsUnique();
 
-        builder.Property(user => user.Username).IsRequired().HasMaxLength(200);
+        builder.Property(user => user.Username).IsRequired().HasMaxLength(30);
 
         builder.Property(user => user.Email)
             .IsRequired()

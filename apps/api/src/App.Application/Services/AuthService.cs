@@ -1,3 +1,5 @@
+using App.Application.Exceptions;
+
 namespace App.Application.Services;
 
 public class AuthService(
@@ -28,12 +30,12 @@ public class AuthService(
 
         if (user == null)
         {
-            throw new Exception("Wrong username or password");
+            throw new UnauthorizedException("Wrong username or password");
         }
         bool isValidPassword = passwordHasher.Verify(LoginRequest.Password, user.HashedPassword);
         if (!isValidPassword)
         {
-            throw new Exception("Wrong username or password");
+            throw new UnauthorizedException("Wrong username or password");
         }
 
         var (accessToken, accessTokenExpiredAt) = tokenService.GenerateAccessToken(user);
@@ -59,17 +61,17 @@ public class AuthService(
         var user = session?.User;
         if (session == null || user == null)
         {
-            throw new Exception("Invalid refresh token");
+            throw new UnauthorizedException("Invalid refresh token");
         }
 
         if (session.ExpiredAt <= DateTime.UtcNow)
         {
-            throw new Exception("Refresh token expired");
+            throw new UnauthorizedException("Refresh token expired");
         }
 
         if (session.RevokedAt != null)
         {
-            throw new Exception("Refresh token reuse detected");
+            throw new UnauthorizedException("Refresh token reuse detected");
         }
         session.RevokedAt = DateTime.UtcNow;
 
