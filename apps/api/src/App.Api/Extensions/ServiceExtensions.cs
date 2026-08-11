@@ -1,12 +1,11 @@
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using App.Api.Data;
-using App.Application.Interfaces;
+using App.Application;
 using App.Application.Repositories;
-using App.Application.Services;
 using App.Infrastructure;
 using App.Infrastructure.Authentication;
-using App.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +22,6 @@ public static class ServiceExtensions
         });
         return services;
     }
-
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         JwtSettings jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>()!;
@@ -77,7 +75,6 @@ public static class ServiceExtensions
         });
         return services;
     }
-
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
         var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
@@ -93,33 +90,65 @@ public static class ServiceExtensions
         });
         return services;
     }
-
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddImplementationsFromAssembly(
+        this IServiceCollection services,
+        Assembly assembly,
+        string suffix,
+        string namespaceSuffix,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped
+    )
     {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IUserService, UserService>();
+        var implementationTypes = assembly
+            .GetTypes()
+            .Where(t =>
+                t.IsClass &&
+                !t.IsAbstract &&
+                t.Name.EndsWith(suffix) &&
+                t.Namespace?.EndsWith(namespaceSuffix) == true);
 
+        foreach (var implementationType in implementationTypes)
+        {
+            var interfaceType = implementationType
+                .GetInterfaces()
+                .FirstOrDefault(i =>
+                    i.Name == $"I{implementationType.Name}");
+
+            if (interfaceType is not null)
+            {
+                services.Add(new ServiceDescriptor(
+                    interfaceType,
+                    implementationType,
+                    lifetime));
+            }
+        }
         return services;
     }
-
-    public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServicesFromAssembly(this IServiceCollection services)
+    {
+        return services.AddImplementationsFromAssembly(typeof(ApplicationAssemblyMarker).Assembly, "Service", ".Services");
+    }
+    public static IServiceCollection AddInfrastructureServiceFromAssembly(this IServiceCollection services)
+    {
+        return services.AddImplementationsFromAssembly(typeof(InfrastructureAssemblyMarker).Assembly, "Repository", ".Repositories");
+    }
+    public static IServiceCollection AddPersistenceServices(this IServiceCollection services)
     {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPasswordHasher, PasswordHashder>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<IReFreshTokenRepository, RefreshTokenRepository>();
 
         return services;
     }
-
     public static IServiceCollection InitCustomServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabase(configuration);
         services.AddJwtAuthentication(configuration);
         services.AddCorsPolicy(configuration);
-        services.AddApplicationServices();
-        services.AddRepositoryServices();
+
+        services.AddPersistenceServices();
+        services.AddApplicationServicesFromAssembly();
+
+        services.AddInfrastructureServiceFromAssembly();
 
         return services;
     }
