@@ -1,11 +1,8 @@
-using App.Application.DTOs;
-using App.Domain.Entities;
+namespace App.Application.Mappings;
 
-namespace App.Application.Extensions;
-
-public static class UserExtension
+public static class UserMapper
 {
-    public static UserResponse ToResponse(this User user)
+    public static UserResponse ToUserResponse(this User user)
     {
         ArgumentNullException.ThrowIfNull(user);
 

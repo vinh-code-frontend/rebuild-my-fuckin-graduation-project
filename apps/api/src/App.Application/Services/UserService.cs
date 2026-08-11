@@ -9,14 +9,12 @@ public class UserService(IPasswordHasher passwordHasher, IUserRepository userRep
     {
         var users = await userRepository.GetAllAsync();
 
-        return users.Select(u => u.ToResponse()).ToList() ?? [];
+        return users.Select(u => u.ToUserResponse()).ToList() ?? [];
     }
 
     public async Task<UserResponse?> GetUserByIdAsync(Guid userId)
     {
-        var user = await userRepository.GetUserByIdAsync(userId);
-
-        return user?.ToResponse();
+        return (await userRepository.GetUserByIdAsync(userId))?.ToUserResponse();
     }
 
     public async Task<CreateUserResponse> CreateUserAsync(CreateUserRequestDto payload)

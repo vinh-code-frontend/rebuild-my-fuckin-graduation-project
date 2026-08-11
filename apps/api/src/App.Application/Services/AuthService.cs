@@ -105,7 +105,7 @@ public class AuthService(
             CsrfToken = csrfToken,
             AccessExpiresAt = accessTokenExpiredAt,
             RefreshExpiresAt = refreshTokenExpiredAt,
-            User = user.ToResponse()
+            User = UserMapper.ToUserResponse(user)
         };
     }
 }
