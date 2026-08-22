@@ -1,6 +1,6 @@
 ## Apps
 
-# VEXA = Vision + Experience + X-factor + Access
+# VEXA
 
 1. API: .NET
 2. Admin: React
